@@ -27,6 +27,12 @@ export default function ContactFormMapSection() {
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
 
+  // Hidden anti-spam field. Real visitors never see or fill this.
+  const [website, setWebsite] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
   const countryDropdownRef = useRef<HTMLDivElement>(null);
   const programDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -64,10 +70,65 @@ export default function ContactFormMapSection() {
     };
   }, []);
 
-  const handleSendEmail = () => {
-    const subject = encodeURIComponent(`Enquiry from ${name || "Website Visitor"}`);
-    const body = encodeURIComponent(`Name: ${name}\nPhone: ${selectedCountry.code} ${phone}\nInterested in: ${selectedOption}\n\nMessage/Notes:\n${message}`);
-    window.location.href = `mailto:info@teamzippy.in?subject=${subject}&body=${body}`;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+
+    if (!name.trim()) {
+      setSubmitError("Please enter your name.");
+      return;
+    }
+    if (phone.replace(/\D/g, "").length < 6) {
+      setSubmitError("Please enter a valid phone number.");
+      return;
+    }
+
+    setSubmitError("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/enquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          formType: "contact",
+          name,
+          phone,
+          countryCode: selectedCountry.code,
+          interest: selectedOption,
+          message,
+          website,
+          source: typeof window !== "undefined" ? window.location.pathname : "/contact",
+        }),
+      });
+
+      if (!response.ok) {
+        const data = (await response.json().catch(() => null)) as
+          | { error?: string }
+          | null;
+        throw new Error(data?.error || "Could not send your enquiry.");
+      }
+
+      setIsSubmitted(true);
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error && error.message
+          ? error.message
+          : "Could not send your enquiry. Please try again or call us.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleReset = () => {
+    setName("");
+    setPhone("");
+    setMessage("");
+    setSelectedOption("Riding Programs");
+    setWebsite("");
+    setSubmitError("");
+    setIsSubmitted(false);
   };
 
   return (
@@ -87,6 +148,51 @@ export default function ContactFormMapSection() {
                 </h1>
 
                 <div className="p-6 md:p-8 max-sm:p-5 rounded-sm" style={{ backgroundColor: "#F2EBD9" }}>
+                  {isSubmitted ? (
+                    <div className="flex flex-col items-center text-center py-2">
+                      <div className="w-14 h-14 rounded-full bg-[#DA7347]/15 text-[#DA7347] flex items-center justify-center mb-4">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <h2 className="text-xl md:text-2xl text-[#85431E] font-light mb-2">
+                        Enquiry received
+                      </h2>
+                      <p className="text-sm text-[#85431E]/80 font-light leading-relaxed max-w-sm mb-6">
+                        Thank you{name ? `, ${name}` : ""}. Our team has your details and will get back to you shortly.
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-3 w-full max-w-sm">
+                        <button
+                          type="button"
+                          onClick={handleReset}
+                          className="flex-1 px-4 py-2.5 text-[11px] uppercase tracking-wider text-white rounded-sm hover:opacity-90 transition-opacity"
+                          style={{ backgroundColor: "#85431E" }}
+                        >
+                          Send another
+                        </button>
+                        <a
+                          href="https://wa.me/919882988267"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 px-4 py-2.5 text-[11px] uppercase tracking-wider text-center text-[#DA7347] border border-[#DA7347] rounded-sm hover:bg-[#DA7347] hover:text-white transition-colors"
+                        >
+                          WhatsApp us
+                        </a>
+                      </div>
+                    </div>
+                  ) : (
+                  <form onSubmit={handleSubmit} noValidate>
+                  <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}>
+                    <label htmlFor="contact-website">Website</label>
+                    <input
+                      id="contact-website"
+                      type="text"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={website}
+                      onChange={(e) => setWebsite(e.target.value)}
+                    />
+                  </div>
                   <div className="mb-5">
                     <label className="text-[#85431E]/70 text-xs  uppercase mb-2 block font-light">
                       Your name
@@ -198,18 +304,34 @@ export default function ContactFormMapSection() {
                     />
                   </div>
 
+                  {submitError && (
+                    <p role="alert" className="mb-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-sm px-3 py-2">
+                      {submitError}
+                    </p>
+                  )}
+
                   <div className="flex justify-end max-md:justify-center">
-                    <button 
-                      onClick={handleSendEmail}
-                      className="flex items-center gap-3 text-white text-[11px]  uppercase px-6 py-3 rounded-sm hover:opacity-90 transition-opacity max-md:w-full max-md:justify-center max-md:py-3.5" 
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="flex items-center gap-3 text-white text-[11px]  uppercase px-6 py-3 rounded-sm hover:opacity-90 transition-opacity max-md:w-full max-md:justify-center max-md:py-3.5 disabled:opacity-70 disabled:cursor-not-allowed"
                       style={{ backgroundColor: "#DA7347" }}
                     >
-                      Send Enquiry
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-                        <path d="M5 12H19M12 5L19 12L12 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                      </svg>
+                      {isSubmitting ? "Sending..." : "Send Enquiry"}
+                      {isSubmitting ? (
+                        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                        </svg>
+                      ) : (
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                          <path d="M5 12H19M12 5L19 12L12 19" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      )}
                     </button>
                   </div>
+                  </form>
+                  )}
                 </div>
               </div>
             </Reveal>

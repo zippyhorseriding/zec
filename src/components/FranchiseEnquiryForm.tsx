@@ -25,6 +25,9 @@ export default function FranchiseEnquiryForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  // Hidden anti-spam field. Real visitors never see or fill this.
+  const [website, setWebsite] = useState("");
 
   const countryDropdownRef = useRef<HTMLDivElement>(null);
   const landDropdownRef = useRef<HTMLDivElement>(null);
@@ -64,33 +67,48 @@ export default function FranchiseEnquiryForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
+    setSubmitError("");
     setIsSubmitting(true);
 
-    // Prepare email payload
-    const subject = encodeURIComponent(`Franchise Enquiry: ${city || "New Location"} - ${name}`);
-    const body = encodeURIComponent(
-      `FRANCHISE OPPORTUNITY ENQUIRY\n` +
-      `---------------------------------\n` +
-      `Name: ${name}\n` +
-      `Email: ${email}\n` +
-      `Phone: ${selectedCountry.code} ${phone}\n` +
-      `Proposed City / Region: ${city}\n` +
-      `Land / Property Status: ${landStatus}\n\n` +
-      `Notes / Questions:\n${message || "N/A"}\n\n` +
-      `Submitted via Zippy Equestrian Franchise Portal`
-    );
+    try {
+      const response = await fetch("/api/enquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          formType: "franchise",
+          name,
+          email,
+          phone,
+          countryCode: selectedCountry.code,
+          city,
+          landStatus,
+          message,
+          website,
+          source: typeof window !== "undefined" ? window.location.pathname : "/beyond",
+        }),
+      });
 
-    // Open email client with pre-filled enquiry
-    window.location.href = `mailto:info@teamzippy.in?subject=${subject}&body=${body}`;
+      if (!response.ok) {
+        const data = (await response.json().catch(() => null)) as
+          | { error?: string }
+          | null;
+        throw new Error(data?.error || "Could not submit your enquiry.");
+      }
 
-    setTimeout(() => {
-      setIsSubmitting(false);
       setIsSubmitted(true);
-    }, 600);
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error && error.message
+          ? error.message
+          : "Could not submit your enquiry. Please try again or call us.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleReset = () => {
@@ -99,8 +117,10 @@ export default function FranchiseEnquiryForm() {
     setPhone("");
     setCity("");
     setMessage("");
+    setWebsite("");
     setLandStatus(LAND_STATUS_OPTIONS[0]);
     setErrors({});
+    setSubmitError("");
     setIsSubmitted(false);
   };
 
@@ -152,6 +172,17 @@ export default function FranchiseEnquiryForm() {
         </div>
       ) : (
         <form onSubmit={handleSubmit} noValidate className="space-y-4">
+          <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}>
+            <label htmlFor="franchise-website">Website</label>
+            <input
+              id="franchise-website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+            />
+          </div>
           {/* Full Name */}
           <div>
             <label className="text-[#85431E]/80 text-xs uppercase mb-1.5 block font-medium tracking-wide">
@@ -341,6 +372,11 @@ export default function FranchiseEnquiryForm() {
 
           {/* Submit Button */}
           <div className="pt-2">
+            {submitError && (
+              <p role="alert" className="mb-3 text-xs text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2">
+                {submitError}
+              </p>
+            )}
             <button
               type="submit"
               disabled={isSubmitting}
