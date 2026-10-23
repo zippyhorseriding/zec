@@ -28,6 +28,14 @@ export const activityType = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: "overlayColor",
+      title: "Card Overlay Colour",
+      type: "string",
+      description:
+        "CSS colour laid over the photo, e.g. #DA7347 or rgba(135, 28, 7, 0.90).",
+      initialValue: "rgba(135, 28, 7, 0.90)",
+    }),
+    defineField({
       name: "ctaText",
       title: "Button Text",
       type: "string",

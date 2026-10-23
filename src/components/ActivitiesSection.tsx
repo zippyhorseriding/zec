@@ -4,6 +4,7 @@ import React from 'react';
 import Image from 'next/image';
 import Reveal from '@/components/ui/Reveal';
 import Link from 'next/link';
+import type { ActivityItem } from '@/sanity/lib/fetch';
 
 const ActivityCard = ({
   title,
@@ -49,30 +50,59 @@ const ActivityCard = ({
   );
 };
 
-const ActivitiesSection = () => {
-  const activities = [
-    {
-      title: "Summer camps",
-      description: "For kids who want more than a screen this summer.",
-      imageSrc: "/assets/images/HomePage/Webp/summercamp.webp",
-      overlayColor: "rgba(135, 28, 7, 0.90)", // #d67a5b with alpha
-      href: "/beyond#summer-camps"
-    },
-    {
-      title: "Parties and Venues",
-      description: "Host your next get-together at the stables.",
-      imageSrc: "/assets/images/HomePage/Webp/party.webp",
-      overlayColor: "#2658C4", // #2e58b9 with alpha
-      href: "/beyond#summer-camps"
-    },
-    {
-      title: "Photoshoots",
-      description: "The most beautiful backdrop in South Bangalore.",
-      imageSrc: "/assets/images/HomePage/Webp/photoshoot.webp",
-      overlayColor: "#DA7347", // #85431E with alpha
-      href: "/beyond#summer-camps"
-    }
-  ];
+type ActivityCardData = {
+  title: string;
+  description: string;
+  imageSrc: string;
+  overlayColor: string;
+  href: string;
+};
+
+const DEFAULT_ACTIVITIES: ActivityCardData[] = [
+  {
+    title: "Summer camps",
+    description: "For kids who want more than a screen this summer.",
+    imageSrc: "/assets/images/HomePage/Webp/summercamp.webp",
+    overlayColor: "rgba(135, 28, 7, 0.90)", // #d67a5b with alpha
+    href: "/beyond/summer-camps"
+  },
+  {
+    title: "Parties and Venues",
+    description: "Host your next get-together at the stables.",
+    imageSrc: "/assets/images/HomePage/Webp/party.webp",
+    overlayColor: "#2658C4", // #2e58b9 with alpha
+    href: "/beyond/parties-and-venues"
+  },
+  {
+    title: "Photoshoots",
+    description: "The most beautiful backdrop in South Bangalore.",
+    imageSrc: "/assets/images/HomePage/Webp/photoshoot.webp",
+    overlayColor: "#DA7347", // #85431E with alpha
+    href: "/beyond/photoshoots"
+  }
+];
+
+/** Adapts CMS activities to the card shape, keeping the default overlay colours. */
+const toCardData = (items: ActivityItem[]): ActivityCardData[] =>
+  items.map((item, i) => ({
+    title: item.title,
+    description: item.description,
+    imageSrc: item.image,
+    overlayColor:
+      item.overlayColor ||
+      DEFAULT_ACTIVITIES[i % DEFAULT_ACTIVITIES.length].overlayColor,
+    href: item.ctaHref || DEFAULT_ACTIVITIES[i % DEFAULT_ACTIVITIES.length].href,
+  }));
+
+interface ActivitiesSectionProps {
+  initialActivities?: ActivityItem[];
+}
+
+const ActivitiesSection = ({ initialActivities }: ActivitiesSectionProps) => {
+  const activities =
+    initialActivities && initialActivities.length > 0
+      ? toCardData(initialActivities)
+      : DEFAULT_ACTIVITIES;
 
   return (
     <section className="bg-[#FFF8E5] py-14 md:py-18 px-6">

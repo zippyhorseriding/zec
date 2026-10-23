@@ -3,7 +3,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import LoadingScreen from "@/components/ui/LoadingScreen";
 import FloatingWidgets from "@/components/FloatingWidgets";
-import { getChatFaqs } from "@/sanity/lib/fetch";
+import { SiteSettingsProvider } from "@/components/SiteSettingsProvider";
+import { getChatFaqs, getSiteSettings } from "@/sanity/lib/fetch";
 
 const gtUltra = localFont({
   src: [
@@ -129,14 +130,19 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const chatFaqs = await getChatFaqs();
+  const [chatFaqs, siteSettings] = await Promise.all([
+    getChatFaqs(),
+    getSiteSettings(),
+  ]);
 
   return (
     <html lang="en" className={`${gtUltra.variable} ${gtUltraUltra.variable} ${gtUltraFine.variable} ${gtUltraFineUltra.variable} ${optimaFont.variable} antialiased`}>
       <body className="font-sans">
-        <LoadingScreen />
-        {children}
-        <FloatingWidgets faqs={chatFaqs} />
+        <SiteSettingsProvider settings={siteSettings}>
+          <LoadingScreen />
+          {children}
+          <FloatingWidgets faqs={chatFaqs} />
+        </SiteSettingsProvider>
       </body>
     </html>
   );

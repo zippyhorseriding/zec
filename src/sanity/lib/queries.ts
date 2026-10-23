@@ -219,6 +219,7 @@ export const ACTIVITIES_QUERY = groq`
     title,
     description,
     "image": image.asset->url,
+    overlayColor,
     ctaText,
     ctaHref,
     order

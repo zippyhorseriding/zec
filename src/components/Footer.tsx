@@ -3,6 +3,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useInView, motion } from 'framer-motion';
+import { useSiteSettings } from '@/components/SiteSettingsProvider';
 
 const PaintingLogo = ({ src, className, delay = 0 }: { src: string; className?: string; delay?: number }) => {
   const ref = useRef<HTMLDivElement>(null);
@@ -45,11 +46,17 @@ interface FooterProps {
 
 const Footer = ({
   forceTerracotta = false,
-  heading = "The rider in you is\njust a ride away.",
-  subheading = "Your first ride is 30 minutes away. Call us\nand let's get you started.",
-  ctaText = "Book your trial ride",
+  heading,
+  subheading,
+  ctaText,
 }: FooterProps) => {
+  const settings = useSiteSettings();
   const ref = useRef<HTMLElement>(null);
+
+  // Explicit props win; otherwise fall back to the Site Settings document.
+  const resolvedHeading = heading ?? settings.footerHeading;
+  const resolvedSubheading = subheading ?? settings.footerSubheading;
+  const resolvedCtaText = ctaText ?? settings.footerCtaText;
 
   // Amount of the footer that must be visible before `footer-active` kicks in.
   // On mobile the footer is taller relative to the viewport, so a 50% threshold
@@ -102,13 +109,13 @@ const Footer = ({
           <div className="order-1 md:order-2 md:col-start-2 md:row-start-1 flex flex-col justify-center max-w-lg mx-auto md:mx-0 md:pl-8 lg:pl-16 w-full">
             <div className={`text-center md:text-left ${textColor}`}>
               <h2 className="text-2xl sm:text-3xl md:text-[48px] lg:text-[56px] font-medium leading-[1.15] mb-3 sm:mb-4 md:mb-6 tracking-tight whitespace-pre-line">
-                {heading}
+                {resolvedHeading}
               </h2>
               <p className="text-xs sm:text-sm md:text-lg opacity-90 mb-5 sm:mb-6 md:mb-10 font-light leading-relaxed whitespace-pre-line max-w-md mx-auto md:mx-0">
-                {subheading}
+                {resolvedSubheading}
               </p>
               <Link href="/contact" className={`group flex items-center justify-center md:justify-start gap-2.5 sm:gap-4 px-5 py-2 sm:px-6 sm:py-2.5 md:px-8 md:py-4 border rounded transition-all duration-300 mx-auto md:mx-0 w-fit ${borderColor} ${buttonHover}`}>
-                <span className="text-xs sm:text-sm md:text-lg font-light">{ctaText}</span>
+                <span className="text-xs sm:text-sm md:text-lg font-light">{resolvedCtaText}</span>
                 <svg
                   width="20"
                   height="20"

@@ -91,9 +91,9 @@ export async function POST(request: NextRequest) {
 
     // Apps Script returns JSON from the webhook. Anything else means the
     // deployment is misconfigured (for example a Google sign-in page).
-    let result: { ok?: boolean; error?: string } | null = null;
+    let result: { ok?: boolean; error?: string; version?: string } | null = null;
     try {
-      result = JSON.parse(text) as { ok?: boolean; error?: string };
+      result = JSON.parse(text) as { ok?: boolean; error?: string; version?: string };
     } catch {
       console.error("[enquiry] Webhook response was not JSON", text.slice(0, 200));
     }

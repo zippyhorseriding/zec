@@ -14,14 +14,16 @@ import {
   getWebsiteFaqs,
   getGalleryItems,
   getStats,
+  getActivities,
 } from "@/sanity/lib/fetch";
 
 export default async function Home() {
-  const [testimonials, faqs, galleryItems, stats] = await Promise.all([
+  const [testimonials, faqs, galleryItems, stats, activities] = await Promise.all([
     getRiderStories([]),
     getWebsiteFaqs(),
     getGalleryItems(),
     getStats(),
+    getActivities(),
   ]);
 
   return (
@@ -31,7 +33,7 @@ export default async function Home() {
       <AboutSection initialStats={stats} />
       <ScrollCarousel />
       <TestimonialSection initialTestimonials={testimonials} />
-      <ActivitiesSection />
+      <ActivitiesSection initialActivities={activities} />
       <ZippyFamilySection />
       <FaqSection initialFaqs={faqs} />
       <StoriesInstagramSection initialGallery={galleryItems} />

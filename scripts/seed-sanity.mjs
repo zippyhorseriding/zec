@@ -5,10 +5,19 @@
  * Usage:
  *   node scripts/seed-sanity.mjs                    # seed everything
  *   node scripts/seed-sanity.mjs chatFaq            # seed only chatbot Q&A
- *   node scripts/seed-sanity.mjs faq stats          # seed a few sections
+ *   node scripts/seed-sanity.mjs faq stat           # seed a few sections
+ *
+ * Sections: siteSettings, program, beyondService, blogPost, riderStory,
+ * instructor, horse, teamMember, faq, stat, chatFaq.
+ * (galleryItem and activity are created by upload-assets.mjs — they are
+ *  image-driven, so they live there.)
  *
  * Seeding is `createOrReplace` on fixed IDs, so a full run overwrites anything
  * edited in the Studio. Pass a section name to leave the rest untouched.
+ *
+ * TEXT ONLY. Images cannot be seeded here because they need an uploaded asset
+ * reference — run `node scripts/upload-assets.mjs` for every photo (and for the
+ * gallery + activity documents, which are image-driven).
  *
  * Requires:
  *   NEXT_PUBLIC_SANITY_PROJECT_ID in .env.local

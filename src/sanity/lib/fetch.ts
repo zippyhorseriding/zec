@@ -24,35 +24,13 @@ import { blogPosts, getBlogPostBySlug, BlogPost } from "@/data/blogData";
 import { chatFaqs as fallbackChatFaqs, ChatFaq } from "@/data/chatFaqs";
 import { defaultFaqs, WebsiteFaq } from "@/data/faqData";
 import { defaultGalleryItems, GalleryItem } from "@/data/galleryData";
+import {
+  defaultSiteSettings,
+  type SiteSettings,
+} from "./siteSettingsDefaults";
 
-export interface SiteSettings {
-  siteName: string;
-  tagline: string;
-  phoneNumber: string;
-  email: string;
-  address: string;
-  googleMapsUrl?: string;
-  instagramUrl?: string;
-  facebookUrl?: string;
-  youtubeUrl?: string;
-  footerHeading: string;
-  footerSubheading: string;
-  footerCtaText: string;
-}
-
-export const defaultSiteSettings: SiteSettings = {
-  siteName: "Zippy Equestrian Center",
-  tagline: "Real Riding. Real Feeling.",
-  phoneNumber: "+91 98453 64281",
-  email: "ride@zippyec.com",
-  address:
-    "Survey No. 46/1 & 46/2, Chikkanayakanahalli, Off Sarjapur Road, Near Carmelaram Railway Station, Bengaluru, Karnataka 560035",
-  googleMapsUrl: "https://maps.google.com/?q=Zippy+Equestrian+Center",
-  instagramUrl: "https://www.instagram.com/zippyequestrian",
-  footerHeading: "The rider in you is just a ride away.",
-  footerSubheading: "Your first ride is 30 minutes away. Call us and let's get you started.",
-  footerCtaText: "Book your trial ride",
-};
+export { defaultSiteSettings };
+export type { SiteSettings };
 
 /**
  * Safely fetches Sanity data with an automatic fallback if Sanity is not configured or fails
@@ -520,6 +498,7 @@ export interface ActivityItem {
   title: string;
   description: string;
   image: string;
+  overlayColor?: string;
   ctaText?: string;
   ctaHref?: string;
   order?: number;

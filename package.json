@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test:chat": "node scripts/test-chat-matcher.ts"
+    "test:chat": "node scripts/test-chat-matcher.ts",
+    "seed": "node scripts/seed-sanity.mjs",
+    "upload:images": "node scripts/upload-assets.mjs"
   },
   "dependencies": {
     "@sanity/client": "^8.9.0",
