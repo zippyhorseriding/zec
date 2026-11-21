@@ -192,7 +192,7 @@ function renderCard(
 
   return (
     <div
-      className={`flex-shrink-0 w-[85vw] md:w-[429px] flex flex-col h-[591px] max-md:h-[480px] transition-all duration-500 ease-out ${
+      className={`w-full md:w-[429px] flex-shrink-0 flex flex-col flex-1 md:h-[591px] max-md:min-h-[480px] transition-all duration-500 ease-out ${
         hasSelection
           ? isSelected
             ? "opacity-100 z-20 relative"
@@ -263,13 +263,13 @@ function renderCard(
               </Link>
             </h3>
 
-            <p className={`text-[11px] md:text-[12px] mb-3 md:mb-4 leading-relaxed opacity-90`}>
+            <p className={`text-[11px] md:text-[12px] mb-2.5 md:mb-4 leading-snug md:leading-relaxed opacity-90`}>
               {card.description}
             </p>
 
             <div className="flex flex-col gap-1.5 mt-auto">
               {card.features.map((feature, i) => (
-                <div key={i} className={`border-t ${card.featureBorder} pt-1.5 md:pt-2 text-[10px] md:text-[11px] leading-relaxed opacity-90`}>
+                <div key={i} className={`border-t ${card.featureBorder} pt-1.5 md:pt-2 text-[10px] md:text-[11px] leading-snug md:leading-relaxed opacity-90`}>
                   {feature}
                 </div>
               ))}
@@ -467,10 +467,10 @@ export default function ProgramsCardsSection({ initialCards }: ProgramsCardsSect
           <div
             ref={mobileTrackRef}
             data-mobile-carousel
-            className="flex overflow-x-auto snap-x snap-proximity no-scrollbar gap-4 touch-pan-x overscroll-x-contain [-webkit-overflow-scrolling:touch] px-6 py-6"
+            className="flex items-stretch overflow-x-auto snap-x snap-proximity no-scrollbar gap-4 touch-pan-x overscroll-x-contain [-webkit-overflow-scrolling:touch] px-6 py-6"
           >
             {activeCards.map((card) => (
-              <div key={card.id} data-card className="flex-shrink-0 snap-center w-[85vw]">
+              <div key={card.id} data-card className="flex-shrink-0 snap-center w-[85vw] flex flex-col">
                 {renderCard(
                   card,
                   selectedCardId === card.id,
