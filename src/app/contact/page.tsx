@@ -4,6 +4,8 @@ import Footer from "@/components/Footer";
 import ContactFormMapSection from "@/components/ContactFormMapSection";
 import ContactDirectorySection from "@/components/ContactDirectorySection";
 import ContactInstagramSection from "@/components/ContactInstagramSection";
+import ContactRegistrationBox from "@/components/ContactRegistrationBox";
+
 export default function ContactPage() {
   return (
     <main className="relative min-h-screen bg-[#FFF8E5]">
@@ -14,6 +16,7 @@ export default function ContactPage() {
         </Suspense>
         <ContactDirectorySection />
         <ContactInstagramSection bgColor="#FFF8E5" />
+        <ContactRegistrationBox />
       </div>
       <Footer />
     </main>

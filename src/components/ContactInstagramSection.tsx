@@ -31,7 +31,7 @@ export default function ContactInstagramSection({ bgColor = "#FFFBF2" }: Contact
 
       {/* ── SVG band — edge to edge ── */}
       <div
-        className="w-full relative pt-6 md:pt-8 pb-28 md:pb-36 max-md:pt-4 max-md:pb-16"
+        className="w-full relative pt-6 md:pt-8 pb-8 md:pb-12 max-md:pt-4 max-md:pb-6"
         style={{
           backgroundColor:  "transparent",
           backgroundImage:  "url('/assets/images/insta-bg.svg')",

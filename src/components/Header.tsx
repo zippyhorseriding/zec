@@ -8,10 +8,11 @@ import { createPortal } from "react-dom";
 
 // Map of route → hero image to silently prefetch when the user hovers the link
 const ROUTE_PREFETCH: Record<string, string> = {
-  "/about":    "/assets/images/About/Webp/hero.webp",
-  "/programs": "/assets/images/Programs/Webp/Hero.webp",
-  "/beyond":   "/assets/images/BeyondRide/Webp/beyond-hero.webp",
-  "/stories":  "/assets/images/Rider_stories/Webp/riders-hero.webp",
+  "/about":        "/assets/images/About/Webp/hero.webp",
+  "/programs":     "/assets/images/Programs/Webp/Hero.webp",
+  "/beyond":       "/assets/images/BeyondRide/Webp/beyond-hero.webp",
+  "/stories":      "/assets/images/Rider_stories/Webp/riders-hero.webp",
+  "/registration": "/assets/images/Programs/Webp/Hero.webp",
 };
 
 /** Kicks off a background download so the image is cached before navigation. */

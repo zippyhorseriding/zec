@@ -18,6 +18,7 @@ This document lists all static, dynamic, and onsite SEO landing pages created ac
 | **Rider Stories** | `/stories` | https://zippyec.netlify.app/stories |
 | **Blog (Overview)** | `/blog` | https://zippyec.netlify.app/blog |
 | **Contact Us** | `/contact` | https://zippyec.netlify.app/contact |
+| **Registration** | `/registration` | https://zippyec.netlify.app/registration |
 
 ---
 
